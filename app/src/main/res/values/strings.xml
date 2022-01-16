@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">TP3-StarBM-2</string>
+    <string name="date">Date</string>
+    <string name="hour">Heure</string>
+    <string name="toDetermine">À déterminer</string>
+    <string name="loading">Chargement</string>
+    <string name="loadFinish">Chargement terminé</string>
 </resources>
