@@ -1,11 +1,18 @@
 package com.example.tp3_starbm_2.fragments
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
 import com.example.tp3_starbm_2.R
+import com.example.tp3_starbm_2.models.MainPostman
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 /**
@@ -14,6 +21,7 @@ import com.example.tp3_starbm_2.R
  * create an instance of this fragment.
  */
 class FilterFragment : Fragment() {
+    val postMan = MainPostman
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,8 +31,43 @@ class FilterFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        initChangeDate()
+        initChangeHour()
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_filter, container, false)
+    }
+
+    fun initChangeHour(){
+        val butChangeHour = view?.findViewById<Button>(R.id.butChangeHour)
+        val textViewHour = view?.findViewById<TextView>(R.id.textViewHour)
+
+        butChangeHour?.setOnClickListener {
+            val cal = Calendar.getInstance()
+            val timeSetListener = TimePickerDialog.OnTimeSetListener { timePicker, hour, minute ->
+                cal.set(Calendar.HOUR_OF_DAY, hour)
+                cal.set(Calendar.MINUTE, minute)
+                textViewHour?.text = SimpleDateFormat("HH:mm").format(cal.time)
+            }
+            TimePickerDialog(activity, timeSetListener, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true).show()
+        }
+    }
+
+    fun initChangeDate(){
+        val butChangeDate = view?.findViewById<Button>(R.id.butChangeDate)
+        val textViewDate = view?.findViewById<TextView>(R.id.textViewDate)
+
+        val c = Calendar.getInstance()
+        val year = c.get(Calendar.YEAR)
+        val month = c.get(Calendar.MONTH)
+        val day = c.get(Calendar.DAY_OF_MONTH)
+
+        butChangeDate?.setOnClickListener {
+            val dpd = DatePickerDialog(requireActivity(), DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                textViewDate?.setText("" + dayOfMonth + " " + month + ", " + year)
+            }, year, month, day)
+            dpd.show()
+        }
     }
 
     companion object {
