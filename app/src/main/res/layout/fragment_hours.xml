@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".StopsFragment">
+    tools:context=".fragments.HoursFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -18,7 +18,7 @@
             android:text="@string/hello_blank_fragment" />
 
         <Button
-            android:id="@+id/butCancelStops"
+            android:id="@+id/butCancelHours"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/cancel"
@@ -26,12 +26,11 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/butValidStops"
+            android:id="@+id/butValidHours"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/valid"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/butCancelStops"
+            app:layout_constraintStart_toEndOf="@+id/butCancelHours"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
