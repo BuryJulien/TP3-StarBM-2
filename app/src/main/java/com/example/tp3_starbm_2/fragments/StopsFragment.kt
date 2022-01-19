@@ -1,12 +1,13 @@
 package com.example.tp3_starbm_2.fragments
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
 import com.example.tp3_starbm_2.R
 
 // TODO: Rename parameter arguments, choose names that match
@@ -38,22 +39,29 @@ class StopsFragment constructor() : Fragment() {
     ): View? {
         val ll = inflater.inflate(R.layout.fragment_stops, container, false)
         val butCancelStops: Button = ll.findViewById(R.id.butCancelStops)
-        val butValidStops: Button = ll.findViewById(R.id.butValidStops)
 
         butCancelStops.setOnClickListener{
             this.activity?.onBackPressed()
         }
 
-        butValidStops.setOnClickListener{
-            this.openFragment()
+        val tabStops = arrayOf('1', '2', '3', '4', '5', '6', '7')
+        val listStops: LinearLayout = ll.findViewById(R.id.listStops)
+        tabStops.forEach {
+            val tv: TextView = TextView(ll.context)
+            val text: String = it.toString()
+            tv.setText(text)
+            tv.setOnClickListener{
+                this.openFragment(text)
+            }
+            listStops.addView(tv)
         }
 
         // Inflate the layout for this fragment
         return ll
     }
 
-    private fun openFragment() {
-        val hoursFragment = HoursFragment()
+    private fun openFragment(stop: String) {
+        val hoursFragment = HoursFragment(stop)
         val fragmentManager = this.parentFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_out, R.anim.slide_in, R.anim.slide_out)

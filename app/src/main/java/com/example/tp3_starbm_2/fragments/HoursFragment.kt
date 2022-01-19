@@ -6,6 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
 import com.example.tp3_starbm_2.R
 
 // TODO: Rename parameter arguments, choose names that match
@@ -18,7 +20,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [HoursFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class HoursFragment : Fragment() {
+class HoursFragment(private var stop: String) : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -37,21 +39,28 @@ class HoursFragment : Fragment() {
     ): View? {
         val ll = inflater.inflate(R.layout.fragment_hours, container, false)
         val butCancelHours: Button = ll.findViewById(R.id.butCancelHours)
-        val butValidHours: Button = ll.findViewById(R.id.butValidHours)
 
         butCancelHours.setOnClickListener{
             this.activity?.onBackPressed()
         }
 
-        butValidHours.setOnClickListener{
-            this.openFragment()
+        val tabHours = arrayOf('1', '2', '3', '4', '5', '6', '7')
+        val listHours: LinearLayout = ll.findViewById(R.id.listHours)
+        tabHours.forEach {
+            val tv: TextView = TextView(ll.context)
+            val text: String = it.toString()
+            tv.setText(text)
+            tv.setOnClickListener{
+                this.openFragment(text)
+            }
+            listHours.addView(tv)
         }
 
         // Inflate the layout for this fragment
         return ll
     }
 
-    private fun openFragment() {
+    private fun openFragment(text: String) {
         TODO("Not yet implemented")
     }
 
@@ -66,8 +75,8 @@ class HoursFragment : Fragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HoursFragment().apply {
+        fun newInstance(param1: String, param2: String, stop: String) =
+            HoursFragment(stop).apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)
