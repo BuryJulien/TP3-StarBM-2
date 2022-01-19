@@ -3,12 +3,15 @@ package com.example.tp3_starbm_2.fragments
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.transition.TransitionInflater
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.fragment.app.FragmentContainerView
 import com.example.tp3_starbm_2.R
 import com.example.tp3_starbm_2.models.MainPostman
 import java.text.SimpleDateFormat
@@ -34,8 +37,23 @@ class FilterFragment : Fragment() {
         initChangeDate()
         initChangeHour()
 
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_filter, container, false)
+        val ll = inflater.inflate(R.layout.fragment_filter, container, false)
+        val butValidFilter: Button = ll.findViewById(R.id.butValidFilter);
+
+        butValidFilter.setOnClickListener{
+            this.openFragmentStops()
+        }
+
+        return ll
+    }
+
+    private fun openFragmentStops() {
+        val stopsFragment = StopsFragment()
+        val fragmentManager = this.parentFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_out, R.anim.slide_in, R.anim.slide_out)
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.add(R.id.filterFragment, stopsFragment, "BLANK_FRAGMENT").commit()
     }
 
     fun initChangeHour(){

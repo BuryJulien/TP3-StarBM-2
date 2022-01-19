@@ -1,10 +1,12 @@
 package com.example.tp3_starbm_2.fragments
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import com.example.tp3_starbm_2.R
 
 // TODO: Rename parameter arguments, choose names that match
@@ -17,7 +19,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [StopsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class StopsFragment : Fragment() {
+class StopsFragment constructor() : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -34,8 +36,25 @@ class StopsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val ll = inflater.inflate(R.layout.fragment_stops, container, false)
+        val butCancelStops: Button = ll.findViewById(R.id.butCancelStops)
+        val butValidStops: Button = ll.findViewById(R.id.butValidStops)
+
+        butCancelStops.setOnClickListener{
+            System.out.println("click")
+            this.activity?.onBackPressed()
+        }
+
+        butValidStops.setOnClickListener{
+            this.openFragment()
+        }
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_stops, container, false)
+        return ll
+    }
+
+    private fun openFragment() {
+        TODO("Not yet implemented")
     }
 
     companion object {

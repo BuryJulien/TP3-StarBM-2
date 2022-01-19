@@ -8,9 +8,11 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/white">
 
         <LinearLayout
+            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -66,16 +68,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="30dp"
-                android:spinnerMode="dropdown"
-                android:contentDescription="Lignes de bus"/>
+                android:contentDescription="Lignes de bus"
+                android:spinnerMode="dropdown" />
 
             <Spinner
                 android:id="@+id/spinnerDirections"
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="30dp"
-                android:spinnerMode="dropdown"
-                android:contentDescription="Direction du bus"/>
+                android:contentDescription="Direction du bus"
+                android:spinnerMode="dropdown" />
 
             <TextView
                 android:id="@+id/textLoad"
@@ -93,6 +95,15 @@
                 android:visibility="invisible" />
 
         </LinearLayout>
+
+        <Button
+            android:id="@+id/butValidFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/valid"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
