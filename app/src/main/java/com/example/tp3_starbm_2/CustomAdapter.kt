@@ -1,4 +1,4 @@
-package com.example.tp3_star
+package com.example.tp3_starbm_2
 
 import android.content.Context
 import android.graphics.Color

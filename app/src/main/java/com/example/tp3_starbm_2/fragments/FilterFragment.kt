@@ -1,15 +1,29 @@
 package com.example.tp3_starbm_2.fragments
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.ContentResolver
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.CpuUsageInfo
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.Spinner
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.example.tp3_star.dataBase.entities.BusRoutes
+import com.example.tp3_star.dataBase.entities.Stops
+import com.example.tp3_starbm_2.CustomAdapter
 import com.example.tp3_starbm_2.R
+import com.example.tp3_starbm_2.contract.StarContract
 import com.example.tp3_starbm_2.models.MainPostman
 import java.text.SimpleDateFormat
 import java.util.*
@@ -22,6 +36,7 @@ import java.util.*
  */
 class FilterFragment : Fragment() {
     val postMan = MainPostman
+    private var routes = ArrayList<BusRoutes>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +92,38 @@ class FilterFragment : Fragment() {
         fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_out, R.anim.slide_in, R.anim.slide_out)
         fragmentTransaction.addToBackStack(null)
         fragmentTransaction.add(R.id.filterFragment, stopsFragment, "BLANK_FRAGMENT").commit()
+    }
+
+    @SuppressLint("Range")
+    private fun loadBusRoutes()
+    {
+        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)
+        {
+            //ActivityCompat.requestPermissions()
+        }
+        val contentResolver = requireActivity().contentResolver
+        val uri = StarContract.BusRoutes.CONTENT_URI
+        val cursor = contentResolver.query(uri, null,null,null,null)
+        if (cursor != null) {
+            if(cursor.count > 0)
+            {
+                var id = 0
+                while (cursor.moveToNext())
+                {
+                    id++
+                    var short = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.SHORT_NAME))
+                    var name = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.LONG_NAME))
+                    var color = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.COLOR))
+                    var textColor = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.TEXT_COLOR))
+                    routes.add(BusRoutes(id,short, name, color, textColor))
+                }
+            }
+        }
+        val spinnerRoutes = requireActivity().findViewById<Spinner>(R.id.spinnerLignesBus)
+
+        val adapter = CustomAdapter(requireActivity(), routes)
+        spinnerRoutes.adapter = adapter
+
     }
 
     companion object {
