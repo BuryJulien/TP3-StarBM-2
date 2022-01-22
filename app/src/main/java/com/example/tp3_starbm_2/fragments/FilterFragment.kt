@@ -2,23 +2,22 @@ package com.example.tp3_starbm_2.fragments
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.ContentResolver
 import android.content.pm.PackageManager
 import android.database.DatabaseUtils
 import android.os.Bundle
-import android.os.CpuUsageInfo
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.core.app.ActivityCompat
+import android.widget.AdapterView
+import android.widget.Button
+import android.widget.Spinner
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.example.tp3_star.dataBase.entities.BusRoutes
-import com.example.tp3_star.dataBase.entities.Stops
 import com.example.tp3_starbm_2.CustomAdapter
 import com.example.tp3_starbm_2.R
 import com.example.tp3_starbm_2.contract.StarContract
@@ -32,7 +31,7 @@ import java.util.*
  * Use the [FilterFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class FilterFragment : Fragment() {
+class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
     val postMan = MainPostman
     private var routes = ArrayList<BusRoutes>()
     private lateinit var spinnerRoutes : Spinner
@@ -47,7 +46,7 @@ class FilterFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        val ll = inflater.inflate(R.layout.fragment_filter, container, false)
+        var ll = inflater.inflate(R.layout.fragment_filter, container, false)
         val butValidFilter: Button = ll.findViewById(R.id.butValidFilter);
 
         butValidFilter.setOnClickListener{
@@ -83,9 +82,7 @@ class FilterFragment : Fragment() {
             }, year, month, day)
             dpd.show()
         }
-
-        loadBusRoutes(ll)
-
+        loadBusRoutes()
 
         return ll
     }
@@ -100,7 +97,7 @@ class FilterFragment : Fragment() {
     }
 
     @SuppressLint("Range")
-    private fun loadBusRoutes(ll: View)
+    private fun loadBusRoutes()
     {
         val contentResolver = requireActivity().contentResolver
         val uri = StarContract.BusRoutes.CONTENT_URI
@@ -157,19 +154,31 @@ class FilterFragment : Fragment() {
                 while (cursor.moveToNext())
                 {
                     id++
-                    var short = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.SHORT_NAME))
-                    var name = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.LONG_NAME))
-                    var color = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.COLOR))
-                    var textColor = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.TEXT_COLOR))
+                    val short = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.SHORT_NAME))
+                    val name = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.LONG_NAME))
+                    val color = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.COLOR))
+                    val textColor = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.TEXT_COLOR))
                     routes.add(BusRoutes(id,short, name, color, textColor))
                 }
             }
         }
-        val spinnerRoutes = ll.findViewById<Spinner>(R.id.spinnerLignesBus)
 
         val adapter = CustomAdapter(requireActivity(), routes)
         spinnerRoutes.adapter = adapter
+        spinnerRoutes.onItemSelectedListener = this
+    }
 
+    override fun onItemSelected(adaptor: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        /*
+        val busRoutes: List<BusRoutes> = dbManager.getRoutes()
+        this.selectedBusRoute = busRoutes.get(position)
+        this.initDirections()
+
+         */
+    }
+
+    override fun onNothingSelected(p0: AdapterView<*>?) {
+        TODO("Not yet implemented")
     }
 
     companion object {
