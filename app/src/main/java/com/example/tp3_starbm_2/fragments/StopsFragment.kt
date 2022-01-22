@@ -67,7 +67,7 @@ class StopsFragment constructor() : Fragment() {
             if(cursor.count > 0)
             {
                 System.out.println("CURSOR ---------------------")
-                System.out.println(DatabaseUtils.dumpCursorToString(cursor))
+                // System.out.println(DatabaseUtils.dumpCursorToString(cursor))
                 System.out.println("END CURSOR ---------------------")
                 var id = 0
                 while (cursor.moveToNext())

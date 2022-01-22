@@ -1,5 +1,7 @@
 package com.example.tp3_starbm_2.fragments
 
+import android.annotation.SuppressLint
+import android.database.DatabaseUtils
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,7 +10,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.example.tp3_star.dataBase.entities.StopTimes
+import com.example.tp3_star.dataBase.entities.Stops
 import com.example.tp3_starbm_2.R
+import com.example.tp3_starbm_2.contract.StarContract
+import java.util.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,6 +30,8 @@ class HoursFragment(private var stop: String) : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var listHours = ArrayList<StopTimes>()
+    private lateinit var layoutListStopTimes: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,29 +47,65 @@ class HoursFragment(private var stop: String) : Fragment() {
     ): View? {
         val ll = inflater.inflate(R.layout.fragment_hours, container, false)
         val butCancelHours: Button = ll.findViewById(R.id.butCancelHours)
+        this.layoutListStopTimes = ll.findViewById(R.id.layoutListStopTimes)
 
         butCancelHours.setOnClickListener{
             this.activity?.onBackPressed()
         }
 
-        val tabHours = arrayOf('1', '2', '3', '4', '5', '6', '7')
-        val listHours: LinearLayout = ll.findViewById(R.id.listHours)
-        tabHours.forEach {
-            val tv: TextView = TextView(ll.context)
-            val text: String = it.toString()
-            tv.setText(text)
-            tv.setOnClickListener{
-                this.openFragment(text)
-            }
-            listHours.addView(tv)
-        }
+        this.loadHours()
 
         // Inflate the layout for this fragment
         return ll
     }
 
+    @SuppressLint("Range")
     private fun loadHours() {
-        TODO("Not yet implemented")
+        val contentResolver = requireActivity().contentResolver
+        val uri = StarContract.StopTimes.CONTENT_URI
+        val cursor = contentResolver.query(uri, null,null, arrayOf<String>("1005", "0001", "0", "0", "1", "0", "0", "0", "0", "0"),null)
+        if (cursor != null) {
+            if(cursor.count > 0)
+            {
+                System.out.println("CURSOR ---------------------")
+                System.out.println(DatabaseUtils.dumpCursorToString(cursor))
+                System.out.println("END CURSOR ---------------------")
+                var id = 0
+                while (cursor.moveToNext())
+                {
+                    id++
+                    val trip_id = cursor.getString(cursor.getColumnIndex(StarContract.StopTimes.StopTimeColumns.TRIP_ID))
+                    val arrival_time = cursor.getString(cursor.getColumnIndex(StarContract.StopTimes.StopTimeColumns.ARRIVAL_TIME))
+                    val departure_time = cursor.getString(cursor.getColumnIndex(StarContract.StopTimes.StopTimeColumns.DEPARTURE_TIME))
+                    val stop_id = cursor.getString(cursor.getColumnIndex(StarContract.StopTimes.StopTimeColumns.STOP_ID))
+                    val stop_sequence = cursor.getString(cursor.getColumnIndex(StarContract.StopTimes.StopTimeColumns.STOP_SEQUENCE))
+                    listHours.add(
+                        StopTimes(
+                            trip_id,
+                            arrival_time,
+                            departure_time,
+                            stop_id,
+                            stop_sequence
+                        )
+                    )
+                }
+            }
+        }
+
+        this.listHours.forEach{
+            val sep: TextView = TextView(this.context)
+            sep.setText("  ||")
+            layoutListStopTimes.addView(sep)
+
+            val tv: TextView = TextView(this.context)
+            val text: String = it.departure_time
+            tv.setText(text)
+            tv.textSize = 20F
+            tv.setOnClickListener{
+                this.openFragment(text)
+            }
+            layoutListStopTimes.addView(tv)
+        }
     }
 
     private fun openFragment(text: String) {
