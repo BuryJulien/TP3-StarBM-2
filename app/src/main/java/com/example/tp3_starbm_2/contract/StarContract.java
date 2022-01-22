@@ -5,7 +5,7 @@ import android.provider.BaseColumns;
 
 public interface StarContract {
 
-    String AUTHORITY = "fr.foursov.provider";
+    String AUTHORITY = "com.example.tp3_star.provider";
 
     Uri AUTHORITY_URI = Uri.parse("content://" + AUTHORITY);
 
@@ -18,7 +18,7 @@ public interface StarContract {
                 "vnd.android.cursor.item/vnd.fr.istic.starprovider.busroute";
 
         interface BusRouteColumns extends BaseColumns {
-            String SHORT_NAME = "route_short_name";
+            String SHORT_NAME = "route_short";
             String LONG_NAME = "route_long_name";
             String DESCRIPTION = "route_desc";
             String TYPE = "route_type";

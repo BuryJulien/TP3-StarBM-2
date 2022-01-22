@@ -10,7 +10,6 @@ import com.example.tp3_starbm_2.models.MainPostman
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        MainPostman.setMainActivity(this)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
     }

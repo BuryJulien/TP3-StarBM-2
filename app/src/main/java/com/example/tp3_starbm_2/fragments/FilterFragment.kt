@@ -7,16 +7,14 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.ContentResolver
 import android.content.pm.PackageManager
+import android.database.DatabaseUtils
 import android.os.Bundle
 import android.os.CpuUsageInfo
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.Spinner
-import android.widget.TextView
+import android.widget.*
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.tp3_star.dataBase.entities.BusRoutes
@@ -37,6 +35,8 @@ import java.util.*
 class FilterFragment : Fragment() {
     val postMan = MainPostman
     private var routes = ArrayList<BusRoutes>()
+    private lateinit var spinnerRoutes : Spinner
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +56,8 @@ class FilterFragment : Fragment() {
 
         val butChangeHour: Button = ll.findViewById<Button>(R.id.butChangeHour)
         val textViewHour: TextView = ll.findViewById<TextView>(R.id.textViewHour)
+
+        spinnerRoutes = ll.findViewById<Spinner>(R.id.spinnerLignesBus)
 
         butChangeHour.setOnClickListener {
             val cal = Calendar.getInstance()
@@ -82,6 +84,9 @@ class FilterFragment : Fragment() {
             dpd.show()
         }
 
+        loadBusRoutes(ll)
+
+
         return ll
     }
 
@@ -95,18 +100,17 @@ class FilterFragment : Fragment() {
     }
 
     @SuppressLint("Range")
-    private fun loadBusRoutes()
+    private fun loadBusRoutes(ll: View)
     {
-        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED)
-        {
-            //ActivityCompat.requestPermissions()
-        }
         val contentResolver = requireActivity().contentResolver
         val uri = StarContract.BusRoutes.CONTENT_URI
         val cursor = contentResolver.query(uri, null,null,null,null)
         if (cursor != null) {
             if(cursor.count > 0)
             {
+                System.out.println("CURSOR ---------------------")
+                //System.out.println(DatabaseUtils.dumpCursorToString(cursor))
+                System.out.println("END CURSOR ---------------------")
                 var id = 0
                 while (cursor.moveToNext())
                 {
@@ -119,7 +123,49 @@ class FilterFragment : Fragment() {
                 }
             }
         }
-        val spinnerRoutes = requireActivity().findViewById<Spinner>(R.id.spinnerLignesBus)
+
+        val adapter = CustomAdapter(requireActivity(), routes)
+        spinnerRoutes.adapter = adapter
+
+        spinnerRoutes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
+
+        }
+
+    }
+
+    @SuppressLint("Range")
+    private fun loadBusDirections(ll: View)
+    {
+        val contentResolver = requireActivity().contentResolver
+        val uri = StarContract.Trips.CONTENT_URI
+        val cursor = contentResolver.query(uri, null,
+            spinnerRoutes.selectedItem as String?,null,null)
+        if (cursor != null) {
+            if(cursor.count > 0)
+            {
+                System.out.println("CURSOR ---------------------")
+                //System.out.println(DatabaseUtils.dumpCursorToString(cursor))
+                System.out.println("END CURSOR ---------------------")
+                var id = 0
+                while (cursor.moveToNext())
+                {
+                    id++
+                    var short = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.SHORT_NAME))
+                    var name = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.LONG_NAME))
+                    var color = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.COLOR))
+                    var textColor = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.TEXT_COLOR))
+                    routes.add(BusRoutes(id,short, name, color, textColor))
+                }
+            }
+        }
+        val spinnerRoutes = ll.findViewById<Spinner>(R.id.spinnerLignesBus)
 
         val adapter = CustomAdapter(requireActivity(), routes)
         spinnerRoutes.adapter = adapter
