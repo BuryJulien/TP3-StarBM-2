@@ -60,6 +60,10 @@ class HoursFragment(private var stop: String) : Fragment() {
         return ll
     }
 
+    private fun loadHours() {
+        TODO("Not yet implemented")
+    }
+
     private fun openFragment(text: String) {
         TODO("Not yet implemented")
     }
