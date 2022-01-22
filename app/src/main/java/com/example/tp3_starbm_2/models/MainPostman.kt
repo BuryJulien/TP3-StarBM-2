@@ -7,24 +7,24 @@ import com.example.tp3_star.dataBase.entities.Stops
 import com.example.tp3_starbm_2.MainActivity
 import com.example.tp3_starbm_2.contract.StarContract
 import com.example.tp3_starbm_2.entities.Trips
-import com.example.tp3_starbm_2.interfaces.Observable
-import com.example.tp3_starbm_2.interfaces.Observer
+import java.util.*
+import kotlin.collections.ArrayList
 
-object MainPostman : Observable {
+object MainPostman : Observable() {
 
 
     var globalSubscribers = ArrayList<Observer>()
 
-    override fun subscribe(observer: Observer) {
+    fun subscribe(observer: Observer) {
         globalSubscribers.add(observer)
     }
 
-    override fun unsubscribe(observer: Observer) {
+    fun unsubscribe(observer: Observer) {
         globalSubscribers.remove(observer)
     }
 
-    override fun globalNotify() {
-        globalSubscribers.forEach { it.update() }
+    fun globalNotify() {
+        globalSubscribers.forEach { it.update(this, null) }
     }
 
     //Trip package
@@ -46,7 +46,7 @@ object MainPostman : Observable {
 
     private fun tripPackageNotify()
     {
-        tripSubscribers.forEach { it.update() }
+        tripSubscribers.forEach { it.update(this, null) }
     }
 
     fun getRoute() : BusRoutes
@@ -83,7 +83,7 @@ object MainPostman : Observable {
 
     private fun stopPackageNotify()
     {
-        stopSubscribers.forEach { it.update() }
+        stopSubscribers.forEach { it.update(this, null) }
     }
 
     fun getStop() : Stops

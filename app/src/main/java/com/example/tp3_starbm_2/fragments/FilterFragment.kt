@@ -1,11 +1,8 @@
 package com.example.tp3_starbm_2.fragments
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.pm.PackageManager
-import android.database.DatabaseUtils
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -16,11 +13,11 @@ import android.widget.AdapterView
 import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import com.example.tp3_star.dataBase.entities.BusRoutes
 import com.example.tp3_starbm_2.CustomAdapter
 import com.example.tp3_starbm_2.R
 import com.example.tp3_starbm_2.contract.StarContract
+import com.example.tp3_starbm_2.entities.Direction
 import com.example.tp3_starbm_2.models.MainPostman
 import java.text.SimpleDateFormat
 import java.util.*
@@ -31,10 +28,12 @@ import java.util.*
  * Use the [FilterFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
+class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener, Observer {
     val postMan = MainPostman
     private var routes = ArrayList<BusRoutes>()
     private lateinit var spinnerRoutes : Spinner
+    private var directions = ArrayList<Direction>()
+    private lateinit var spinnerDirections : Spinner
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -57,6 +56,7 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val textViewHour: TextView = ll.findViewById<TextView>(R.id.textViewHour)
 
         spinnerRoutes = ll.findViewById<Spinner>(R.id.spinnerLignesBus)
+        spinnerDirections = ll.findViewById<Spinner>(R.id.spinnerDirections)
 
         butChangeHour.setOnClickListener {
             val cal = Calendar.getInstance()
@@ -105,28 +105,26 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
         if (cursor != null) {
             if(cursor.count > 0)
             {
-                System.out.println("CURSOR ---------------------")
-                //System.out.println(DatabaseUtils.dumpCursorToString(cursor))
-                System.out.println("END CURSOR ---------------------")
-                var id = 0
                 while (cursor.moveToNext())
                 {
-                    id++
+                    val id = cursor.getString(cursor.getColumnIndex("route" + StarContract.BusRoutes.BusRouteColumns._ID))
                     var short = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.SHORT_NAME))
                     var name = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.LONG_NAME))
                     var color = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.COLOR))
                     var textColor = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.TEXT_COLOR))
-                    routes.add(BusRoutes(id,short, name, color, textColor))
+                    routes.add(BusRoutes(id.toInt(),short, name, color, textColor))
                 }
             }
         }
 
         val adapter = CustomAdapter(requireActivity(), routes)
         spinnerRoutes.adapter = adapter
+        if(routes.isNotEmpty()) postMan.setRoute(routes.get(0))
+        postMan.tripPackageSubrcibe(this)
 
         spinnerRoutes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-
+                postMan.setRoute(routes.get(p2))
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -138,34 +136,29 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     @SuppressLint("Range")
-    private fun loadBusDirections(ll: View)
+    private fun loadBusDirections()
     {
         val contentResolver = requireActivity().contentResolver
         val uri = StarContract.Trips.CONTENT_URI
         val cursor = contentResolver.query(uri, null,
-            spinnerRoutes.selectedItem as String?,null,null)
+            postMan.getRoute().route_id.toString(),null,null)
         if (cursor != null) {
             if(cursor.count > 0)
             {
-                System.out.println("CURSOR ---------------------")
-                //System.out.println(DatabaseUtils.dumpCursorToString(cursor))
-                System.out.println("END CURSOR ---------------------")
-                var id = 0
+                directions.clear()
                 while (cursor.moveToNext())
                 {
-                    id++
-                    val short = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.SHORT_NAME))
-                    val name = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.LONG_NAME))
-                    val color = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.COLOR))
-                    val textColor = cursor.getString(cursor.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.TEXT_COLOR))
-                    routes.add(BusRoutes(id,short, name, color, textColor))
+                    val id = cursor.getInt(cursor.getColumnIndex(StarContract.Trips.TripColumns.DIRECTION_ID))
+                    val name = cursor.getString(cursor.getColumnIndex(StarContract.Trips.TripColumns.HEADSIGN))
+                    directions.add(Direction(id, name))
                 }
             }
         }
 
-        val adapter = CustomAdapter(requireActivity(), routes)
-        spinnerRoutes.adapter = adapter
-        spinnerRoutes.onItemSelectedListener = this
+        val adapter = ArrayAdapter<Direction>(requireActivity(),
+        android.R.layout.simple_spinner_item,
+        directions);
+        spinnerDirections.adapter = adapter
     }
 
     override fun onItemSelected(adaptor: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -194,5 +187,9 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
         @JvmStatic
         fun newInstance() =
             FilterFragment()
+    }
+
+    override fun update(p0: Observable?, p1: Any?) {
+        loadBusDirections()
     }
 }
