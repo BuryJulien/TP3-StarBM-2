@@ -1,5 +1,7 @@
 package com.example.tp3_starbm_2.fragments
 
+import android.annotation.SuppressLint
+import android.database.DatabaseUtils
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,7 +10,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import com.example.tp3_star.dataBase.entities.Stops
 import com.example.tp3_starbm_2.R
+import com.example.tp3_starbm_2.contract.StarContract
+import java.util.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -24,6 +29,8 @@ class StopsFragment constructor() : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var listStops = ArrayList<Stops>()
+    private lateinit var layoutListStops: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,25 +46,57 @@ class StopsFragment constructor() : Fragment() {
     ): View? {
         val ll = inflater.inflate(R.layout.fragment_stops, container, false)
         val butCancelStops: Button = ll.findViewById(R.id.butCancelStops)
+        this.layoutListStops = ll.findViewById(R.id.layoutListStops)
 
         butCancelStops.setOnClickListener{
             this.activity?.onBackPressed()
         }
 
-        val tabStops = arrayOf('1', '2', '3', '4', '5', '6', '7')
-        val listStops: LinearLayout = ll.findViewById(R.id.listStops)
-        tabStops.forEach {
-            val tv: TextView = TextView(ll.context)
-            val text: String = it.toString()
-            tv.setText(text)
-            tv.setOnClickListener{
-                this.openFragment(text)
-            }
-            listStops.addView(tv)
-        }
+        this.loadStops()
 
         // Inflate the layout for this fragment
         return ll
+    }
+
+    @SuppressLint("Range")
+    private fun loadStops() {
+        val contentResolver = requireActivity().contentResolver
+        val uri = StarContract.Stops.CONTENT_URI
+        val cursor = contentResolver.query(uri, null,"21500000001",null,null)
+        if (cursor != null) {
+            if(cursor.count > 0)
+            {
+                System.out.println("CURSOR ---------------------")
+                System.out.println(DatabaseUtils.dumpCursorToString(cursor))
+                System.out.println("END CURSOR ---------------------")
+                var id = 0
+                while (cursor.moveToNext())
+                {
+                    id++
+                    val description = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.DESCRIPTION))
+                    val name = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.NAME))
+                    val latitude = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.LATITUDE))
+                    val longitude = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.LONGITUDE))
+                    val wheelchair = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.WHEELCHAIR_BOARDING))
+                    listStops.add(Stops(name, description, latitude, longitude, wheelchair))
+                }
+            }
+        }
+
+        this.listStops.forEach{
+            val sep: TextView = TextView(this.context)
+            sep.setText("  ||")
+            layoutListStops.addView(sep)
+
+            val tv: TextView = TextView(this.context)
+            val text: String = it.stop_name + " - " + it.description
+            tv.setText(text)
+            tv.textSize = 20F
+            tv.setOnClickListener{
+                this.openFragment(text)
+            }
+            layoutListStops.addView(tv)
+        }
     }
 
     private fun openFragment(stop: String) {
