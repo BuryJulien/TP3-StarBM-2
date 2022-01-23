@@ -12,4 +12,6 @@
     <string name="departure">Départ</string>
     <string name="hours">Heures</string>
     <string name="search">Recherche</string>
+    <string name="hoursPassage">Heures de passage</string>
+    <string name="hoursDeparture">Heures de départ</string>
 </resources>
