@@ -82,7 +82,7 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         butChangeDate.setOnClickListener {
             val dpd = DatePickerDialog(requireActivity(), DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-                textViewDate?.setText("" + dayOfMonth + " " + month + ", " + year)
+                textViewDate?.setText("" + dayOfMonth + ", " + month + ", " + year)
                 val calendar = Calendar.getInstance()
                 calendar.set(year, month, dayOfMonth)
                 postMan.setDate(SimpleDateFormat("yyyy-MM-dd").format(calendar.time))

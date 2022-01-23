@@ -40,8 +40,10 @@ class CustomAdapter : BaseAdapter {
 
         //libelle.setText(busRoute.route_long_name)
 
-        libelle.setTextColor(Color.parseColor("#" + busRoute.route_text_color))
-        view.setBackgroundColor(Color.parseColor("#" + busRoute.route_color))
+        if(busRoute.route_text_color !== null && busRoute.route_text_color.length > 0){
+            libelle.setTextColor(Color.parseColor("#" + busRoute.route_text_color))
+            view.setBackgroundColor(Color.parseColor("#" + busRoute.route_color))
+        }
         view.setPadding(30, 30, 0, 30)
         return view
     }
