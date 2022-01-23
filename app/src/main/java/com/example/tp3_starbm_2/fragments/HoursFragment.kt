@@ -1,6 +1,7 @@
 package com.example.tp3_starbm_2.fragments
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.database.DatabaseUtils
 import android.os.Bundle
 import android.os.Handler
@@ -32,24 +33,17 @@ private const val ARG_PARAM2 = "param2"
 class HoursFragment() : Fragment() {
     // TODO: Rename and change types of parameters
     val postMan = MainPostman
-    private var param1: String? = null
-    private var param2: String? = null
+    private var isLandscape = false
     private var listHours = ArrayList<StopTimes>()
     private lateinit var layoutListStopTimes: LinearLayout
     private var canOpen = true
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        isLandscape = this.resources.configuration.orientation === Configuration.ORIENTATION_LANDSCAPE
         val ll = inflater.inflate(R.layout.fragment_hours, container, false)
         val butCancelHours: Button = ll.findViewById(R.id.butCancelHours)
         this.layoutListStopTimes = ll.findViewById(R.id.layoutListStopTimes)
@@ -114,6 +108,7 @@ class HoursFragment() : Fragment() {
     private fun openFragment() {
         if(this.canOpen) {
             val fragment = StopTimesDetailFragment()
+            val hoursFragment = HoursFragment()
             val fragmentManager = this.parentFragmentManager
             val fragmentTransaction = fragmentManager.beginTransaction()
             fragmentTransaction.setCustomAnimations(
@@ -123,7 +118,19 @@ class HoursFragment() : Fragment() {
                 R.anim.slide_out
             )
             fragmentTransaction.addToBackStack(null)
-            fragmentTransaction.add(R.id.filterFragment, fragment, "BLANK_FRAGMENT").commit()
+
+            val fragmentTransaction2 = fragmentManager.beginTransaction()
+            fragmentTransaction2.addToBackStack(null)
+            if(isLandscape)
+            {
+                fragmentTransaction2.add(R.id.frag1, hoursFragment, "BLANK_FRAGMENT").commit()
+                fragmentTransaction.replace(R.id.frag2, fragment, "BLANK_FRAGMENT").commit()
+            }
+            else
+            {
+                fragmentTransaction.add(R.id.filterFragment, fragment, "BLANK_FRAGMENT").commit()
+            }
+
 
             val handler = Handler(Looper.getMainLooper())
             this.canOpen = false
