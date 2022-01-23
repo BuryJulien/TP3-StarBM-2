@@ -1,6 +1,7 @@
 package com.example.tp3_starbm_2.models
 
 import com.example.tp3_star.dataBase.entities.BusRoutes
+import com.example.tp3_star.dataBase.entities.StopTimes
 import com.example.tp3_star.dataBase.entities.Stops
 import com.example.tp3_starbm_2.entities.Direction
 import java.text.SimpleDateFormat
@@ -125,6 +126,39 @@ object MainPostman : Observable() {
     {
         this.stop = stop
         stopPackageNotify()
+    }
+
+
+    // Stop time package
+
+    private lateinit var stopTime: StopTimes
+
+    private val stopTimeSubscribers = ArrayList<Observer>()
+
+    fun stopTimePackageSubsrcibe(observer: Observer)
+    {
+        stopTimeSubscribers.add(observer)
+    }
+
+    fun stopTimePackageUnsubscribe(observer: Observer)
+    {
+        stopTimeSubscribers.remove(observer)
+    }
+
+    private fun stopTimePackageNotify()
+    {
+        stopTimeSubscribers.forEach { it.update(this, null) }
+    }
+
+    fun getStopTime() : StopTimes
+    {
+        return stopTime
+    }
+
+    fun setStopTime(stopTime : StopTimes)
+    {
+        this.stopTime = stopTime
+        stopTimePackageNotify()
     }
 
 

@@ -15,6 +15,7 @@ import com.example.tp3_star.dataBase.entities.Stops
 import com.example.tp3_starbm_2.R
 import com.example.tp3_starbm_2.contract.StarContract
 import com.example.tp3_starbm_2.models.MainPostman
+import java.math.BigDecimal
 import java.util.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match
@@ -27,12 +28,13 @@ private const val ARG_PARAM2 = "param2"
  * Use the [HoursFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class HoursFragment(private var stop: String) : Fragment() {
+class StopTimesDetailFragment(private var stop: String) : Fragment() {
     // TODO: Rename and change types of parameters
     val postMan = MainPostman
     private var param1: String? = null
     private var param2: String? = null
     private var listHours = ArrayList<StopTimes>()
+    private var listStops = ArrayList<Stops>()
     private lateinit var layoutListStopTimes: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,7 +67,8 @@ class HoursFragment(private var stop: String) : Fragment() {
     private fun loadHours() {
         val contentResolver = requireActivity().contentResolver
         val uri = StarContract.StopTimes.CONTENT_URI
-        val cursor = contentResolver.query(uri, null,null, arrayOf<String>(postMan.getStop().stop_id.toString(), postMan.getRoute().route_id.toString(), postMan.getDirection().direction_id.toString(), postMan.getDate().toString(), postMan.getHeure()),null)
+        System.out.println("------------------ TRIP ID ---------- " + BigDecimal(postMan.getStopTime().trip_id).toPlainString())
+        val cursor = contentResolver.query(uri, null,BigDecimal(postMan.getStopTime().trip_id).toPlainString(), null,null)
         if (cursor != null) {
             if(cursor.count > 0)
             {
@@ -85,35 +88,43 @@ class HoursFragment(private var stop: String) : Fragment() {
                             stop_sequence
                         )
                     )
+                    val id = cursor.getInt(cursor.getColumnIndex(StarContract.Stops.CONTENT_PATH + StarContract.Stops.StopColumns._ID))
+                    val description = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.DESCRIPTION))
+                    val name = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.NAME))
+                    val latitude = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.LATITUDE))
+                    val longitude = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.LONGITUDE))
+                    val wheelchair = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.WHEELCHAIR_BOARDING))
+                    listStops.add(Stops(id ,name, description, latitude, longitude, wheelchair))
+
                 }
             }
         }
 
-        this.listHours.forEach{
-            val sep: TextView = TextView(this.context)
-            sep.setText("  ||")
-            layoutListStopTimes.addView(sep)
+        this.listHours.forEachIndexed{ index, it ->
 
-            val tv: TextView = TextView(this.context)
-            val text: String = it.departure_time
-            tv.setText(text)
-            tv.textSize = 20F
-            val stopTime = it
-            tv.setOnClickListener{
-                postMan.setStopTime(stopTime)
-                this.openFragment(text)
+            if(it.stop_sequence.toInt() >= postMan.getStopTime().stop_sequence.toInt())
+            {
+                val sep: TextView = TextView(this.context)
+                sep.setText("  ||")
+                layoutListStopTimes.addView(sep)
+
+                val tv: TextView = TextView(this.context)
+                val text: String = listStops.get(index).stop_name + " " + it.departure_time
+                tv.setText(text)
+                tv.textSize = 20F
+                val stopTime = it
+                tv.setOnClickListener{
+                    postMan.setStopTime(stopTime)
+                    this.openFragment(text)
+                }
+                layoutListStopTimes.addView(tv)
             }
-            layoutListStopTimes.addView(tv)
+
         }
     }
 
     private fun openFragment(text: String) {
-        val fragment = StopTimesDetailFragment(stop)
-        val fragmentManager = this.parentFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_out, R.anim.slide_in, R.anim.slide_out)
-        fragmentTransaction.addToBackStack(null)
-        fragmentTransaction.add(R.id.filterFragment, fragment, "BLANK_FRAGMENT").commit()
+        TODO("Not yet implemented")
     }
 
     companion object {
