@@ -49,9 +49,9 @@ class StopTimesDetailFragment(private var stop: String) : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val ll = inflater.inflate(R.layout.fragment_hours, container, false)
+        val ll = inflater.inflate(R.layout.fragment_stop_times_detail, container, false)
         val butCancelHours: Button = ll.findViewById(R.id.butCancelHours)
-        this.layoutListStopTimes = ll.findViewById(R.id.layoutListStopTimes)
+        this.layoutListStopTimes = ll.findViewById(R.id.layoutListStopTimesDetail)
 
         butCancelHours.setOnClickListener{
             this.activity?.onBackPressed()
@@ -109,14 +109,10 @@ class StopTimesDetailFragment(private var stop: String) : Fragment() {
                 layoutListStopTimes.addView(sep)
 
                 val tv: TextView = TextView(this.context)
-                val text: String = listStops.get(index).stop_name + " " + it.departure_time
+                val text: String = it.departure_time + " -> " + listStops.get(index).stop_name
                 tv.setText(text)
                 tv.textSize = 20F
                 val stopTime = it
-                tv.setOnClickListener{
-                    postMan.setStopTime(stopTime)
-                    this.openFragment(text)
-                }
                 layoutListStopTimes.addView(tv)
             }
 

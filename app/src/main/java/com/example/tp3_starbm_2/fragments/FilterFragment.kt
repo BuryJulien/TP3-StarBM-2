@@ -114,13 +114,9 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val stopsFragment = StopsFragment()
         val fragmentManager = this.parentFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
-        if(this.resources.configuration.orientation === Configuration.ORIENTATION_LANDSCAPE) {
-            fragmentTransaction.replace(R.id.stopsFragment, stopsFragment, "BLANK_FRAGMENT").commit()
-        } else {
-            fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_out, R.anim.slide_in, R.anim.slide_out)
-            fragmentTransaction.addToBackStack(null)
-            fragmentTransaction.add(R.id.filterFragment, stopsFragment, "BLANK_FRAGMENT").commit()
-        }
+        fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_out, R.anim.slide_in, R.anim.slide_out)
+        fragmentTransaction.addToBackStack(null)
+        fragmentTransaction.add(R.id.filterFragment, stopsFragment, "BLANK_FRAGMENT").commit()
         val handler = Handler(Looper.getMainLooper())
         handler.postDelayed({
             this.butValidFilter.isEnabled = true
