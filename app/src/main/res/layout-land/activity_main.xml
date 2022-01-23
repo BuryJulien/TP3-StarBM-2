@@ -10,18 +10,18 @@
         android:orientation="horizontal" >
 
         <fragment
-            android:id="@+id/titles"
+            android:id="@+id/frag1"
             android:layout_width="0px"
             android:layout_height="match_parent"
             android:layout_weight="1"
             class="com.example.tp3_starbm_2.fragments.FilterFragment" />
 
-        <FrameLayout
-            android:id="@+id/details"
+        <fragment
+            android:id="@+id/frag2"
             android:layout_width="0px"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:background="?android:attr/detailsElementBackground" />
+            class="com.example.tp3_starbm_2.fragments.StopsFragment" />
 
     </LinearLayout>
 

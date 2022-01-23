@@ -27,7 +27,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [HoursFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class HoursFragment(private var stop: String) : Fragment() {
+class HoursFragment() : Fragment() {
     // TODO: Rename and change types of parameters
     val postMan = MainPostman
     private var param1: String? = null
@@ -101,14 +101,14 @@ class HoursFragment(private var stop: String) : Fragment() {
             val stopTime = it
             tv.setOnClickListener{
                 postMan.setStopTime(stopTime)
-                this.openFragment(text)
+                this.openFragment()
             }
             layoutListStopTimes.addView(tv)
         }
     }
 
-    private fun openFragment(text: String) {
-        val fragment = StopTimesDetailFragment(stop)
+    private fun openFragment() {
+        val fragment = StopTimesDetailFragment()
         val fragmentManager = this.parentFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_out, R.anim.slide_in, R.anim.slide_out)
@@ -127,12 +127,7 @@ class HoursFragment(private var stop: String) : Fragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String, stop: String) =
-            HoursFragment(stop).apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        fun newInstance() =
+            HoursFragment()
     }
 }

@@ -14,7 +14,7 @@ import com.example.tp3_star.dataBase.entities.Stops
 import com.example.tp3_starbm_2.R
 import com.example.tp3_starbm_2.contract.StarContract
 import com.example.tp3_starbm_2.models.MainPostman
-import java.util.ArrayList
+import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -26,20 +26,14 @@ private const val ARG_PARAM2 = "param2"
  * Use the [StopsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class StopsFragment constructor() : Fragment() {
+class StopsFragment constructor() : Fragment(), Observer {
     val postMan = MainPostman
     private var param1: String? = null
     private var param2: String? = null
     private var listStops = ArrayList<Stops>()
     private lateinit var layoutListStops: LinearLayout
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,6 +42,8 @@ class StopsFragment constructor() : Fragment() {
         val ll = inflater.inflate(R.layout.fragment_stops, container, false)
         val butCancelStops: Button = ll.findViewById(R.id.butCancelStops)
         this.layoutListStops = ll.findViewById(R.id.layoutListStops)
+
+        postMan.tripPackageSubsrcibe(this)
 
         butCancelStops.setOnClickListener{
             this.activity?.onBackPressed()
@@ -72,6 +68,7 @@ class StopsFragment constructor() : Fragment() {
         if (cursor != null) {
             if(cursor.count > 0)
             {
+                listStops.clear()
                 System.out.println("CURSOR ---------------------")
                 // System.out.println(DatabaseUtils.dumpCursorToString(cursor))
                 System.out.println("END CURSOR ---------------------")
@@ -87,7 +84,7 @@ class StopsFragment constructor() : Fragment() {
                 }
             }
         }
-
+        layoutListStops.removeAllViews()
         this.listStops.forEach{
             val sep: TextView = TextView(this.context)
             sep.setText("  ||")
@@ -100,7 +97,7 @@ class StopsFragment constructor() : Fragment() {
             val stop = it
             tv.setOnClickListener{
                 postMan.setStop(stop)
-                this.openFragment(text)
+                this.openFragment()
             }
             layoutListStops.addView(tv)
         }
@@ -122,8 +119,8 @@ class StopsFragment constructor() : Fragment() {
         listStops.add(stop)
     }
 
-    private fun openFragment(stop: String) {
-        val hoursFragment = HoursFragment(stop)
+    private fun openFragment() {
+        val hoursFragment = HoursFragment()
         val fragmentManager = this.parentFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_out, R.anim.slide_in, R.anim.slide_out)
@@ -142,12 +139,11 @@ class StopsFragment constructor() : Fragment() {
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            StopsFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        fun newInstance() =
+            StopsFragment()
+    }
+
+    override fun update(p0: Observable?, p1: Any?) {
+        loadStops()
     }
 }
