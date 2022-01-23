@@ -78,6 +78,18 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val butChangeDate = ll.findViewById<Button>(R.id.butChangeDate)
         val textViewDate = ll.findViewById<TextView>(R.id.textViewDate)
 
+        val search = ll.findViewById<SearchView>(R.id.searchView)
+        search.setOnCloseListener{
+            System.out.println("HEY")
+            true
+        }
+        search.setOnSearchClickListener{
+            System.out.println("HEY2")
+        }
+        search.setOnFocusChangeListener { view, b ->
+            System.out.println("HEY3")
+        }
+
         val c = Calendar.getInstance()
         val year = c.get(Calendar.YEAR)
         val month = c.get(Calendar.MONTH)
