@@ -35,6 +35,7 @@ class StopsFragment constructor() : Fragment(), Observer {
     private var listStops = ArrayList<Stops>()
     private lateinit var layoutListStops: LinearLayout
     private var canOpen = true
+    private var isLandscape = false
 
 
 
@@ -42,6 +43,7 @@ class StopsFragment constructor() : Fragment(), Observer {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        isLandscape = this.resources.configuration.orientation === Configuration.ORIENTATION_LANDSCAPE
         val ll = inflater.inflate(R.layout.fragment_stops, container, false)
         val butCancelStops: Button = ll.findViewById(R.id.butCancelStops)
         this.layoutListStops = ll.findViewById(R.id.layoutListStops)
@@ -52,7 +54,7 @@ class StopsFragment constructor() : Fragment(), Observer {
             this.activity?.onBackPressed()
         }
 
-        if(this.resources.configuration.orientation === Configuration.ORIENTATION_LANDSCAPE) {
+        if(isLandscape) {
             butCancelStops.visibility = View.INVISIBLE
         }
 
@@ -125,6 +127,7 @@ class StopsFragment constructor() : Fragment(), Observer {
     private fun openFragment() {
         if(this.canOpen) {
             val hoursFragment = HoursFragment()
+            val stopsFragment = StopsFragment()
             val fragmentManager = this.parentFragmentManager
             val fragmentTransaction = fragmentManager.beginTransaction()
             fragmentTransaction.setCustomAnimations(
@@ -134,7 +137,19 @@ class StopsFragment constructor() : Fragment(), Observer {
                 R.anim.slide_out
             )
             fragmentTransaction.addToBackStack(null)
-            fragmentTransaction.add(R.id.filterFragment, hoursFragment, "BLANK_FRAGMENT").commit()
+
+            val fragmentTransaction2 = fragmentManager.beginTransaction()
+            fragmentTransaction2.addToBackStack(null)
+            if(isLandscape)
+            {
+                fragmentTransaction2.add(R.id.frag1, stopsFragment, "BLANK_FRAGMENT").commit()
+                fragmentTransaction.replace(R.id.frag2, hoursFragment, "BLANK_FRAGMENT").commit()
+            }
+            else
+            {
+                fragmentTransaction.add(R.id.filterFragment, hoursFragment, "BLANK_FRAGMENT").commit()
+            }
+
             val handler = Handler(Looper.getMainLooper())
             this.canOpen = false
             handler.postDelayed({
