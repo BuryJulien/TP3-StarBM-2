@@ -15,6 +15,7 @@ import android.widget.TextView
 import com.example.tp3_star.dataBase.entities.Stops
 import com.example.tp3_starbm_2.R
 import com.example.tp3_starbm_2.contract.StarContract
+import com.example.tp3_starbm_2.interfaces.IOnBackPressed
 import com.example.tp3_starbm_2.models.MainPostman
 import java.util.*
 
@@ -28,7 +29,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [StopsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class StopsFragment constructor() : Fragment(), Observer {
+class StopsFragment constructor() : Fragment(), Observer , IOnBackPressed{
     val postMan = MainPostman
     private var param1: String? = null
     private var param2: String? = null
@@ -176,5 +177,10 @@ class StopsFragment constructor() : Fragment(), Observer {
 
     override fun update(p0: Observable?, p1: Any?) {
         loadStops()
+    }
+
+    override fun onBackPressed(): Boolean {
+        postMan.tripPackageUnsubscribe(this)
+        return true
     }
 }

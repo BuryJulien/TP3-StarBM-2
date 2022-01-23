@@ -17,6 +17,7 @@ import com.example.tp3_star.dataBase.entities.StopTimes
 import com.example.tp3_star.dataBase.entities.Stops
 import com.example.tp3_starbm_2.R
 import com.example.tp3_starbm_2.contract.StarContract
+import com.example.tp3_starbm_2.interfaces.IOnBackPressed
 import com.example.tp3_starbm_2.models.MainPostman
 import java.util.*
 
@@ -30,7 +31,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [HoursFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class HoursFragment() : Fragment() , Observer{
+class HoursFragment() : Fragment() , Observer, IOnBackPressed{
     // TODO: Rename and change types of parameters
     val postMan = MainPostman
     private var isLandscape = false
@@ -158,5 +159,10 @@ class HoursFragment() : Fragment() , Observer{
 
     override fun update(p0: Observable?, p1: Any?) {
         loadHours()
+    }
+
+    override fun onBackPressed(): Boolean {
+        postMan.stopPackageUnsubscribe(this)
+        return true
     }
 }

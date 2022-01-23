@@ -14,6 +14,7 @@ import com.example.tp3_star.dataBase.entities.StopTimes
 import com.example.tp3_star.dataBase.entities.Stops
 import com.example.tp3_starbm_2.R
 import com.example.tp3_starbm_2.contract.StarContract
+import com.example.tp3_starbm_2.interfaces.IOnBackPressed
 import com.example.tp3_starbm_2.models.MainPostman
 import java.math.BigDecimal
 import java.util.*
@@ -28,7 +29,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [HoursFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class StopTimesDetailFragment() : Fragment(), Observer {
+class StopTimesDetailFragment() : Fragment(), Observer , IOnBackPressed{
     // TODO: Rename and change types of parameters
     val postMan = MainPostman
     private var param1: String? = null
@@ -61,7 +62,6 @@ class StopTimesDetailFragment() : Fragment(), Observer {
     private fun loadHours() {
         val contentResolver = requireActivity().contentResolver
         val uri = StarContract.StopTimes.CONTENT_URI
-        System.out.println("------------------ TRIP ID ---------- " + BigDecimal(postMan.getStopTime().trip_id).toPlainString())
         val cursor = contentResolver.query(uri, null,BigDecimal(postMan.getStopTime().trip_id).toPlainString(), null,null)
         if (cursor != null) {
             if(cursor.count > 0)
@@ -117,6 +117,8 @@ class StopTimesDetailFragment() : Fragment(), Observer {
         TODO("Not yet implemented")
     }
 
+
+
     companion object {
         /**
          * Use this factory method to create a new instance of
@@ -134,5 +136,10 @@ class StopTimesDetailFragment() : Fragment(), Observer {
 
     override fun update(p0: Observable?, p1: Any?) {
         loadHours()
+    }
+
+    override fun onBackPressed(): Boolean {
+        postMan.stopTimePackageUnsubscribe(this)
+        return true
     }
 }
