@@ -3,6 +3,8 @@ package com.example.tp3_starbm_2.fragments
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -32,6 +34,7 @@ class StopsFragment constructor() : Fragment(), Observer {
     private var param2: String? = null
     private var listStops = ArrayList<Stops>()
     private lateinit var layoutListStops: LinearLayout
+    private var canOpen = true
 
 
 
@@ -120,12 +123,24 @@ class StopsFragment constructor() : Fragment(), Observer {
     }
 
     private fun openFragment() {
-        val hoursFragment = HoursFragment()
-        val fragmentManager = this.parentFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_out, R.anim.slide_in, R.anim.slide_out)
-        fragmentTransaction.addToBackStack(null)
-        fragmentTransaction.add(R.id.filterFragment, hoursFragment, "BLANK_FRAGMENT").commit()
+        if(this.canOpen) {
+            val hoursFragment = HoursFragment()
+            val fragmentManager = this.parentFragmentManager
+            val fragmentTransaction = fragmentManager.beginTransaction()
+            fragmentTransaction.setCustomAnimations(
+                R.anim.slide_in,
+                R.anim.slide_out,
+                R.anim.slide_in,
+                R.anim.slide_out
+            )
+            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.add(R.id.filterFragment, hoursFragment, "BLANK_FRAGMENT").commit()
+            val handler = Handler(Looper.getMainLooper())
+            this.canOpen = false
+            handler.postDelayed({
+                this.canOpen = true
+            }, 1000)
+        }
     }
 
     companion object {

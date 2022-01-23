@@ -3,6 +3,8 @@ package com.example.tp3_starbm_2.fragments
 import android.annotation.SuppressLint
 import android.database.DatabaseUtils
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -34,6 +36,7 @@ class HoursFragment() : Fragment() {
     private var param2: String? = null
     private var listHours = ArrayList<StopTimes>()
     private lateinit var layoutListStopTimes: LinearLayout
+    private var canOpen = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,13 +110,27 @@ class HoursFragment() : Fragment() {
         }
     }
 
+
     private fun openFragment() {
-        val fragment = StopTimesDetailFragment()
-        val fragmentManager = this.parentFragmentManager
-        val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_out, R.anim.slide_in, R.anim.slide_out)
-        fragmentTransaction.addToBackStack(null)
-        fragmentTransaction.add(R.id.filterFragment, fragment, "BLANK_FRAGMENT").commit()
+        if(this.canOpen) {
+            val fragment = StopTimesDetailFragment()
+            val fragmentManager = this.parentFragmentManager
+            val fragmentTransaction = fragmentManager.beginTransaction()
+            fragmentTransaction.setCustomAnimations(
+                R.anim.slide_in,
+                R.anim.slide_out,
+                R.anim.slide_in,
+                R.anim.slide_out
+            )
+            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.add(R.id.filterFragment, fragment, "BLANK_FRAGMENT").commit()
+
+            val handler = Handler(Looper.getMainLooper())
+            this.canOpen = false
+            handler.postDelayed({
+                this.canOpen = true
+            }, 1000)
+        }
     }
 
     companion object {
