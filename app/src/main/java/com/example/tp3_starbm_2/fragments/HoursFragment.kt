@@ -18,7 +18,7 @@ import com.example.tp3_star.dataBase.entities.Stops
 import com.example.tp3_starbm_2.R
 import com.example.tp3_starbm_2.contract.StarContract
 import com.example.tp3_starbm_2.models.MainPostman
-import java.util.ArrayList
+import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -30,7 +30,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [HoursFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class HoursFragment() : Fragment() {
+class HoursFragment() : Fragment() , Observer{
     // TODO: Rename and change types of parameters
     val postMan = MainPostman
     private var isLandscape = false
@@ -47,6 +47,7 @@ class HoursFragment() : Fragment() {
         val ll = inflater.inflate(R.layout.fragment_hours, container, false)
         val butCancelHours: Button = ll.findViewById(R.id.butCancelHours)
         this.layoutListStopTimes = ll.findViewById(R.id.layoutListStopTimes)
+        postMan.stopPackageSubsrcibe(this)
 
         butCancelHours.setOnClickListener{
             this.activity?.onBackPressed()
@@ -153,5 +154,9 @@ class HoursFragment() : Fragment() {
         @JvmStatic
         fun newInstance() =
             HoursFragment()
+    }
+
+    override fun update(p0: Observable?, p1: Any?) {
+        loadHours()
     }
 }

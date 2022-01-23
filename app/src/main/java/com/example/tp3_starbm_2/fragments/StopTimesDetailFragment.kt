@@ -16,7 +16,7 @@ import com.example.tp3_starbm_2.R
 import com.example.tp3_starbm_2.contract.StarContract
 import com.example.tp3_starbm_2.models.MainPostman
 import java.math.BigDecimal
-import java.util.ArrayList
+import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -28,7 +28,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [HoursFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class StopTimesDetailFragment() : Fragment() {
+class StopTimesDetailFragment() : Fragment(), Observer {
     // TODO: Rename and change types of parameters
     val postMan = MainPostman
     private var param1: String? = null
@@ -45,6 +45,7 @@ class StopTimesDetailFragment() : Fragment() {
         val ll = inflater.inflate(R.layout.fragment_stop_times_detail, container, false)
         val butCancelHours: Button = ll.findViewById(R.id.butCancelHours)
         this.layoutListStopTimes = ll.findViewById(R.id.layoutListStopTimesDetail)
+        postMan.stopTimePackageSubsrcibe(this)
 
         butCancelHours.setOnClickListener{
             this.activity?.onBackPressed()
@@ -129,5 +130,9 @@ class StopTimesDetailFragment() : Fragment() {
         @JvmStatic
         fun newInstance() =
             HoursFragment()
+    }
+
+    override fun update(p0: Observable?, p1: Any?) {
+        loadHours()
     }
 }

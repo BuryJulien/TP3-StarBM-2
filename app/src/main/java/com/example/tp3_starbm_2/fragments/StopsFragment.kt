@@ -106,6 +106,7 @@ class StopsFragment constructor() : Fragment(), Observer {
             }
             layoutListStops.addView(tv)
         }
+
     }
 
     fun addOrReplaceOnDuplicate(stop: Stops)

@@ -31,8 +31,8 @@ object MainPostman : Observable() {
     private var date = SimpleDateFormat("yyyy-MM-dd").format(Date())
     private var heure = "00:00:00"
 
-    private lateinit var route: BusRoutes
-    private lateinit var tripDirection: Direction
+    private var route = BusRoutes(0, "NaN", "NaN","NaN","NaN")
+    private var tripDirection = Direction(0, "NaN")
 
     private val tripSubscribers = ArrayList<Observer>()
 
