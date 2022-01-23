@@ -1,7 +1,7 @@
 package com.example.tp3_starbm_2.fragments
 
 import android.annotation.SuppressLint
-import android.database.DatabaseUtils
+import android.content.res.Configuration
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -53,6 +53,10 @@ class StopsFragment constructor() : Fragment() {
             this.activity?.onBackPressed()
         }
 
+        if(this.resources.configuration.orientation === Configuration.ORIENTATION_LANDSCAPE) {
+            butCancelStops.visibility = View.INVISIBLE
+        }
+
         this.loadStops()
 
         // Inflate the layout for this fragment
@@ -100,7 +104,6 @@ class StopsFragment constructor() : Fragment() {
             layoutListStops.addView(tv)
         }
     }
-
 
     private fun openFragment(stop: String) {
         val hoursFragment = HoursFragment(stop)

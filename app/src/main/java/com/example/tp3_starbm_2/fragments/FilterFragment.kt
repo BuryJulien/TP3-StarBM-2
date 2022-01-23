@@ -3,7 +3,10 @@ package com.example.tp3_starbm_2.fragments
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.res.Configuration
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -37,7 +40,7 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private lateinit var spinnerDirections : Spinner
     private lateinit var butChangeHour : Button
     private lateinit var textViewHour : TextView
-
+    private lateinit var butValidFilter: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +52,7 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
     ): View? {
 
         var ll = inflater.inflate(R.layout.fragment_filter, container, false)
-        val butValidFilter: Button = ll.findViewById(R.id.butValidFilter);
+        butValidFilter = ll.findViewById(R.id.butValidFilter);
 
         butValidFilter.setOnClickListener{
             this.openFragmentStops()
@@ -95,12 +98,21 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun openFragmentStops() {
+        this.butValidFilter.isEnabled = false
         val stopsFragment = StopsFragment()
         val fragmentManager = this.parentFragmentManager
         val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_out, R.anim.slide_in, R.anim.slide_out)
-        fragmentTransaction.addToBackStack(null)
-        fragmentTransaction.add(R.id.filterFragment, stopsFragment, "BLANK_FRAGMENT").commit()
+        if(this.resources.configuration.orientation === Configuration.ORIENTATION_LANDSCAPE) {
+            fragmentTransaction.replace(R.id.stopsFragment, stopsFragment, "BLANK_FRAGMENT").commit()
+        } else {
+            fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.slide_out, R.anim.slide_in, R.anim.slide_out)
+            fragmentTransaction.addToBackStack(null)
+            fragmentTransaction.add(R.id.filterFragment, stopsFragment, "BLANK_FRAGMENT").commit()
+        }
+        val handler = Handler(Looper.getMainLooper())
+        handler.postDelayed({
+            this.butValidFilter.isEnabled = true
+        }, 1000)
     }
 
     @SuppressLint("Range")
@@ -172,15 +184,14 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val adapter = CustomAdapterDirection(requireActivity(), directions, postMan.getRoute())
         spinnerDirections.adapter = adapter
         spinnerDirections.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-        override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-            postMan.setDirection(directions.get(p2))
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                postMan.setDirection(directions.get(p2))
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+
+            }
         }
-
-        override fun onNothingSelected(p0: AdapterView<*>?) {
-
-        }
-
-    }
     }
 
     override fun onItemSelected(adaptor: AdapterView<*>?, view: View?, position: Int, id: Long) {
