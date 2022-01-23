@@ -6,7 +6,9 @@ import com.example.tp3_star.dataBase.entities.BusRoutes
 import com.example.tp3_star.dataBase.entities.Stops
 import com.example.tp3_starbm_2.MainActivity
 import com.example.tp3_starbm_2.contract.StarContract
+import com.example.tp3_starbm_2.entities.Direction
 import com.example.tp3_starbm_2.entities.Trips
+import java.time.LocalDateTime
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -27,14 +29,18 @@ object MainPostman : Observable() {
         globalSubscribers.forEach { it.update(this, null) }
     }
 
+
     //Trip package
 
+    private var date = Calendar.getInstance().time
+    private var heure = "00:00:00"
+
     private lateinit var route: BusRoutes
-    private lateinit var trip: Trips
+    private lateinit var tripDirection: Direction
 
     private val tripSubscribers = ArrayList<Observer>()
 
-    fun tripPackageSubrcibe(observer: Observer)
+    fun tripPackageSubsrcibe(observer: Observer)
     {
         tripSubscribers.add(observer)
     }
@@ -49,6 +55,28 @@ object MainPostman : Observable() {
         tripSubscribers.forEach { it.update(this, null) }
     }
 
+    fun getDate() : Date
+    {
+        return date
+    }
+
+    fun setDate(date: Date)
+    {
+        this.date = date
+        tripPackageNotify()
+    }
+
+    fun getHeure() : String
+    {
+        return heure
+    }
+
+    fun setHeure(heure : String)
+    {
+        this.heure = heure
+        tripPackageNotify()
+    }
+
     fun getRoute() : BusRoutes
     {
         return route
@@ -57,12 +85,17 @@ object MainPostman : Observable() {
     fun setRoute(route: BusRoutes)
     {
         this.route = route
-        tripPackageNotify()
     }
 
-    fun getTrip() : Trips
+    fun getDirection() : Direction
     {
-        return trip
+        return tripDirection
+    }
+
+    fun setDirection(direction: Direction)
+    {
+        this.tripDirection = direction
+        tripPackageNotify()
     }
 
     //Stop package
@@ -71,7 +104,7 @@ object MainPostman : Observable() {
 
     private val stopSubscribers = ArrayList<Observer>()
 
-    fun stopPackageSubrcibe(observer: Observer)
+    fun stopPackageSubsrcibe(observer: Observer)
     {
         stopSubscribers.add(observer)
     }
@@ -89,6 +122,12 @@ object MainPostman : Observable() {
     fun getStop() : Stops
     {
         return stop
+    }
+
+    fun setStop(stop : Stops)
+    {
+        this.stop = stop
+        stopPackageNotify()
     }
 
 

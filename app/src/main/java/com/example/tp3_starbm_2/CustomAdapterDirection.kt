@@ -8,20 +8,23 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 import com.example.tp3_star.dataBase.entities.BusRoutes
+import com.example.tp3_starbm_2.entities.Direction
 
-class CustomAdapter : BaseAdapter {
+class CustomAdapterDirection : BaseAdapter {
     private var context: Context
     private var inflter: LayoutInflater
-    private var listBusRoutes: List<BusRoutes>
+    private var listDirections: List<Direction>
+    private var busRoute: BusRoutes
 
-    public constructor(applicationContext: Context, listBusRoutes: List<BusRoutes>){
+    public constructor(applicationContext: Context, listDirections: List<Direction>, busRoute: BusRoutes){
         this.context = applicationContext
         this.inflter = LayoutInflater.from(applicationContext)
-        this.listBusRoutes = listBusRoutes
+        this.listDirections = listDirections
+        this.busRoute = busRoute
     }
 
     override fun getCount(): Int {
-        return this.listBusRoutes.size
+        return this.listDirections.size
     }
 
     override fun getItem(p0: Int): Any? {
@@ -35,8 +38,8 @@ class CustomAdapter : BaseAdapter {
     override fun getView(i: Int, view: View?, viewGroup: ViewGroup?): View {
         val view = this.inflter.inflate(R.layout.custom_spinner_item, null)
         val libelle = view.findViewById<TextView>(R.id.libelleSpinner)
-        val busRoute = this.listBusRoutes.get(i)
-        libelle.setText(busRoute.route_short)
+        val direction = this.listDirections.get(i)
+        libelle.setText(direction.trip_headsign)
 
         //libelle.setText(busRoute.route_long_name)
 

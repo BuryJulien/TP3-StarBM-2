@@ -14,6 +14,7 @@ import com.example.tp3_star.dataBase.entities.StopTimes
 import com.example.tp3_star.dataBase.entities.Stops
 import com.example.tp3_starbm_2.R
 import com.example.tp3_starbm_2.contract.StarContract
+import com.example.tp3_starbm_2.models.MainPostman
 import java.util.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match
@@ -63,17 +64,12 @@ class HoursFragment(private var stop: String) : Fragment() {
     private fun loadHours() {
         val contentResolver = requireActivity().contentResolver
         val uri = StarContract.StopTimes.CONTENT_URI
-        val cursor = contentResolver.query(uri, null,null, arrayOf<String>("1005", "0001", "0", "0", "1", "0", "0", "0", "0", "0"),null)
+        val cursor = contentResolver.query(uri, null,null, arrayOf<String>(MainPostman.getStop().stop_id.toString(), MainPostman.getRoute().route_id.toString(), MainPostman.getDirection().direction_id.toString(), MainPostman.getDate().toString(), MainPostman.getHeure()),null)
         if (cursor != null) {
             if(cursor.count > 0)
             {
-                System.out.println("CURSOR ---------------------")
-                System.out.println(DatabaseUtils.dumpCursorToString(cursor))
-                System.out.println("END CURSOR ---------------------")
-                var id = 0
                 while (cursor.moveToNext())
                 {
-                    id++
                     val trip_id = cursor.getString(cursor.getColumnIndex(StarContract.StopTimes.StopTimeColumns.TRIP_ID))
                     val arrival_time = cursor.getString(cursor.getColumnIndex(StarContract.StopTimes.StopTimeColumns.ARRIVAL_TIME))
                     val departure_time = cursor.getString(cursor.getColumnIndex(StarContract.StopTimes.StopTimeColumns.DEPARTURE_TIME))

@@ -15,6 +15,7 @@ import android.widget.Spinner
 import android.widget.TextView
 import com.example.tp3_star.dataBase.entities.BusRoutes
 import com.example.tp3_starbm_2.CustomAdapter
+import com.example.tp3_starbm_2.CustomAdapterDirection
 import com.example.tp3_starbm_2.R
 import com.example.tp3_starbm_2.contract.StarContract
 import com.example.tp3_starbm_2.entities.Direction
@@ -28,12 +29,14 @@ import java.util.*
  * Use the [FilterFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener, Observer {
+class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
     val postMan = MainPostman
     private var routes = ArrayList<BusRoutes>()
     private lateinit var spinnerRoutes : Spinner
     private var directions = ArrayList<Direction>()
     private lateinit var spinnerDirections : Spinner
+    private lateinit var butChangeHour : Button
+    private lateinit var textViewHour : TextView
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,8 +55,8 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener, Observer 
             this.openFragmentStops()
         }
 
-        val butChangeHour: Button = ll.findViewById<Button>(R.id.butChangeHour)
-        val textViewHour: TextView = ll.findViewById<TextView>(R.id.textViewHour)
+        this.butChangeHour = ll.findViewById<Button>(R.id.butChangeHour)
+        this.textViewHour = ll.findViewById<TextView>(R.id.textViewHour)
 
         spinnerRoutes = ll.findViewById<Spinner>(R.id.spinnerLignesBus)
         spinnerDirections = ll.findViewById<Spinner>(R.id.spinnerDirections)
@@ -64,6 +67,7 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener, Observer 
                 cal.set(Calendar.HOUR_OF_DAY, hour)
                 cal.set(Calendar.MINUTE, minute)
                 textViewHour.text = SimpleDateFormat("HH:mm").format(cal.time)
+                postMan.setHeure(SimpleDateFormat("HH:mm:ss").format(cal.time))
             }
             TimePickerDialog(activity, timeSetListener, cal.get(Calendar.HOUR_OF_DAY), cal.get(Calendar.MINUTE), true).show()
         }
@@ -79,6 +83,9 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener, Observer 
         butChangeDate.setOnClickListener {
             val dpd = DatePickerDialog(requireActivity(), DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
                 textViewDate?.setText("" + dayOfMonth + " " + month + ", " + year)
+                val calendar = Calendar.getInstance()
+                calendar.set(year, month, dayOfMonth)
+                postMan
             }, year, month, day)
             dpd.show()
         }
@@ -120,11 +127,11 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener, Observer 
         val adapter = CustomAdapter(requireActivity(), routes)
         spinnerRoutes.adapter = adapter
         if(routes.isNotEmpty()) postMan.setRoute(routes.get(0))
-        postMan.tripPackageSubrcibe(this)
 
         spinnerRoutes.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
                 postMan.setRoute(routes.get(p2))
+                loadBusDirections()
             }
 
             override fun onNothingSelected(p0: AdapterView<*>?) {
@@ -150,15 +157,30 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener, Observer 
                 {
                     val id = cursor.getInt(cursor.getColumnIndex(StarContract.Trips.TripColumns.DIRECTION_ID))
                     val name = cursor.getString(cursor.getColumnIndex(StarContract.Trips.TripColumns.HEADSIGN))
-                    directions.add(Direction(id, name))
+                    var i = true
+                    directions.forEach {
+                        if(it.direction_id == id)
+                        {
+                            it.trip_headsign += "/ " + name
+                            i = false
+                    }}
+                    if(i) directions.add(Direction(id, name))
                 }
             }
         }
 
-        val adapter = ArrayAdapter<Direction>(requireActivity(),
-        android.R.layout.simple_spinner_item,
-        directions);
+        val adapter = CustomAdapterDirection(requireActivity(), directions, postMan.getRoute())
         spinnerDirections.adapter = adapter
+        spinnerDirections.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+        override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+            postMan.setDirection(directions.get(p2))
+        }
+
+        override fun onNothingSelected(p0: AdapterView<*>?) {
+
+        }
+
+    }
     }
 
     override fun onItemSelected(adaptor: AdapterView<*>?, view: View?, position: Int, id: Long) {
@@ -189,7 +211,4 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener, Observer 
             FilterFragment()
     }
 
-    override fun update(p0: Observable?, p1: Any?) {
-        loadBusDirections()
-    }
 }

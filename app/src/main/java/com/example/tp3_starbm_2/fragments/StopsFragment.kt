@@ -13,6 +13,7 @@ import android.widget.TextView
 import com.example.tp3_star.dataBase.entities.Stops
 import com.example.tp3_starbm_2.R
 import com.example.tp3_starbm_2.contract.StarContract
+import com.example.tp3_starbm_2.models.MainPostman
 import java.util.ArrayList
 
 // TODO: Rename parameter arguments, choose names that match
@@ -26,7 +27,7 @@ private const val ARG_PARAM2 = "param2"
  * create an instance of this fragment.
  */
 class StopsFragment constructor() : Fragment() {
-    // TODO: Rename and change types of parameters
+    val postMan = MainPostman
     private var param1: String? = null
     private var param2: String? = null
     private var listStops = ArrayList<Stops>()
@@ -62,23 +63,22 @@ class StopsFragment constructor() : Fragment() {
     private fun loadStops() {
         val contentResolver = requireActivity().contentResolver
         val uri = StarContract.Stops.CONTENT_URI
-        val cursor = contentResolver.query(uri, null,"21500000001",null,null)
+        val cursor = contentResolver.query(uri, null,null, arrayOf<String>(postMan.getRoute().route_id.toString(), postMan.getDirection().direction_id.toString()),null)
         if (cursor != null) {
             if(cursor.count > 0)
             {
                 System.out.println("CURSOR ---------------------")
                 // System.out.println(DatabaseUtils.dumpCursorToString(cursor))
                 System.out.println("END CURSOR ---------------------")
-                var id = 0
                 while (cursor.moveToNext())
                 {
-                    id++
+                    val id = cursor.getInt(cursor.getColumnIndex(StarContract.Stops.CONTENT_PATH + StarContract.Stops.StopColumns._ID))
                     val description = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.DESCRIPTION))
                     val name = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.NAME))
                     val latitude = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.LATITUDE))
                     val longitude = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.LONGITUDE))
                     val wheelchair = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.WHEELCHAIR_BOARDING))
-                    listStops.add(Stops(name, description, latitude, longitude, wheelchair))
+                    listStops.add(Stops(id ,name, description, latitude, longitude, wheelchair))
                 }
             }
         }
@@ -92,12 +92,15 @@ class StopsFragment constructor() : Fragment() {
             val text: String = it.stop_name + " - " + it.description
             tv.setText(text)
             tv.textSize = 20F
+            val stop = it
             tv.setOnClickListener{
+                postMan.setStop(stop)
                 this.openFragment(text)
             }
             layoutListStops.addView(tv)
         }
     }
+
 
     private fun openFragment(stop: String) {
         val hoursFragment = HoursFragment(stop)
