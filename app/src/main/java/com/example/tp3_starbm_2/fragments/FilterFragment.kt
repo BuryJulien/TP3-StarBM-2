@@ -3,6 +3,7 @@ package com.example.tp3_starbm_2.fragments
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
@@ -11,6 +12,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import android.widget.AdapterView
 import android.widget.Button
@@ -131,6 +133,16 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private fun loadSearch() {
         val contentResolver = requireActivity().contentResolver
         var uri = StarContract.Stops.CONTENT_URI
+        if(requireActivity().currentFocus != null)
+        {
+            val inputManager: InputMethodManager =
+                requireContext().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputManager.hideSoftInputFromWindow(
+                requireActivity().getCurrentFocus()?.getWindowToken(),
+                InputMethodManager.HIDE_NOT_ALWAYS
+            )
+        }
+
         var cursor = contentResolver.query(uri, null, this.searchText.text.toString(),null,null)
         if (cursor != null) {
             if(cursor.count > 0)
@@ -143,7 +155,7 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     listStops.add(Stops(id ,name, description, null, null, null))
                 }
                 val listStopsAff = ArrayList<String>()
-
+                layoutResultats.removeAllViews()
                 listStops.forEach {
 
                     if(!listStopsAff.contains(it.stop_name)){

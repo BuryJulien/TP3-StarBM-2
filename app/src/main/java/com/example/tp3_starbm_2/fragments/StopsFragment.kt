@@ -67,6 +67,7 @@ class StopsFragment constructor() : Fragment() {
     private fun loadStops() {
         val contentResolver = requireActivity().contentResolver
         val uri = StarContract.Stops.CONTENT_URI
+        System.out.println("Parameters : " + postMan.getRoute().route_id.toString() + " " + postMan.getDirection().direction_id.toString())
         val cursor = contentResolver.query(uri, null,null, arrayOf<String>(postMan.getRoute().route_id.toString(), postMan.getDirection().direction_id.toString()),null)
         if (cursor != null) {
             if(cursor.count > 0)
@@ -82,7 +83,7 @@ class StopsFragment constructor() : Fragment() {
                     val latitude = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.LATITUDE))
                     val longitude = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.LONGITUDE))
                     val wheelchair = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.WHEELCHAIR_BOARDING))
-                    listStops.add(Stops(id ,name, description, latitude, longitude, wheelchair))
+                    addOrReplaceOnDuplicate(Stops(id ,name, description, latitude, longitude, wheelchair))
                 }
             }
         }
@@ -103,6 +104,22 @@ class StopsFragment constructor() : Fragment() {
             }
             layoutListStops.addView(tv)
         }
+    }
+
+    fun addOrReplaceOnDuplicate(stop: Stops)
+    {
+        var stopToRemove : Stops? = null
+        listStops.forEach {
+            if(it.stop_name == stop.stop_name)
+            {
+                stopToRemove = it
+            }
+        }
+        if(stopToRemove != null)
+        {
+            listStops.remove(stopToRemove)
+        }
+        listStops.add(stop)
     }
 
     private fun openFragment(stop: String) {
