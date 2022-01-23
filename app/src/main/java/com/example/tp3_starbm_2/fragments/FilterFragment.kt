@@ -17,6 +17,7 @@ import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
 import com.example.tp3_star.dataBase.entities.BusRoutes
+import com.example.tp3_star.dataBase.entities.Stops
 import com.example.tp3_starbm_2.CustomAdapter
 import com.example.tp3_starbm_2.CustomAdapterDirection
 import com.example.tp3_starbm_2.R
@@ -25,6 +26,7 @@ import com.example.tp3_starbm_2.entities.Direction
 import com.example.tp3_starbm_2.models.MainPostman
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 /**
@@ -41,6 +43,9 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private lateinit var butChangeHour : Button
     private lateinit var textViewHour : TextView
     private lateinit var butValidFilter: Button
+    private var listStops = ArrayList<Stops>()
+    private lateinit var layoutResultats: LinearLayout
+    private lateinit var searchText: EditText
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,6 +65,8 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         this.butChangeHour = ll.findViewById<Button>(R.id.butChangeHour)
         this.textViewHour = ll.findViewById<TextView>(R.id.textViewHour)
+        this.layoutResultats = ll.findViewById<LinearLayout>(R.id.layoutResultats)
+        this.searchText = ll.findViewById<EditText>(R.id.searchText)
 
         spinnerRoutes = ll.findViewById<Spinner>(R.id.spinnerLignesBus)
         spinnerDirections = ll.findViewById<Spinner>(R.id.spinnerDirections)
@@ -78,16 +85,9 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val butChangeDate = ll.findViewById<Button>(R.id.butChangeDate)
         val textViewDate = ll.findViewById<TextView>(R.id.textViewDate)
 
-        val search = ll.findViewById<SearchView>(R.id.searchView)
-        search.setOnCloseListener{
-            System.out.println("HEY")
-            true
-        }
-        search.setOnSearchClickListener{
-            System.out.println("HEY2")
-        }
-        search.setOnFocusChangeListener { view, b ->
-            System.out.println("HEY3")
+        val searchButton = ll.findViewById<ImageButton>(R.id.searchButton)
+        searchButton.setOnClickListener{
+            this.loadSearch()
         }
 
         val c = Calendar.getInstance()
@@ -125,6 +125,55 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
         handler.postDelayed({
             this.butValidFilter.isEnabled = true
         }, 1000)
+    }
+
+    @SuppressLint("Range")
+    private fun loadSearch() {
+        val contentResolver = requireActivity().contentResolver
+        var uri = StarContract.Stops.CONTENT_URI
+        var cursor = contentResolver.query(uri, null, this.searchText.text.toString(),null,null)
+        if (cursor != null) {
+            if(cursor.count > 0)
+            {
+                while (cursor.moveToNext())
+                {
+                    val id = cursor.getInt(cursor.getColumnIndex(StarContract.Stops.CONTENT_PATH + StarContract.Stops.StopColumns._ID))
+                    val description = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.DESCRIPTION))
+                    val name = cursor.getString(cursor.getColumnIndex(StarContract.Stops.StopColumns.NAME))
+                    listStops.add(Stops(id ,name, description, null, null, null))
+                }
+                val listStopsAff = ArrayList<String>()
+
+                listStops.forEach {
+
+                    if(!listStopsAff.contains(it.stop_name)){
+                        listStopsAff.add(it.stop_name)
+                        val tv: TextView = TextView(this.context)
+                        val text: String = it.stop_name + " - " + it.description
+                        tv.setText(text)
+                        tv.textSize = 20F
+                        this.layoutResultats.addView(tv)
+
+                        uri = StarContract.BusRoutes.CONTENT_URI
+                        cursor = contentResolver.query(uri, null,it.stop_id.toString(),null,null)
+                        if (cursor != null) {
+                            if (cursor!!.count > 0) {
+                                while (cursor!!.moveToNext()) {
+                                    val name2 = cursor!!.getString(cursor!!.getColumnIndex(StarContract.BusRoutes.BusRouteColumns.SHORT_NAME))
+
+                                    val tv2: TextView = TextView(this.context)
+                                    val text2: String = "    -> " + name2
+                                    tv2.setText(text2)
+                                    tv2.textSize = 20F
+                                    this.layoutResultats.addView(tv2)
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
     }
 
     @SuppressLint("Range")

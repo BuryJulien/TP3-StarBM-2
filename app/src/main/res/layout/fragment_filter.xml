@@ -109,11 +109,39 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
-            <SearchView
-                android:id="@+id/searchView"
+            <LinearLayout
+                android:id="@+id/linearLayout2"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:layout_constraintTop_toBottomOf="@+id/butValidFilter" />
+                android:orientation="horizontal"
+                app:layout_constraintTop_toBottomOf="@+id/butValidFilter"
+                tools:layout_editor_absoluteX="411dp">
+
+                <EditText
+                    android:id="@+id/searchText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:hint="@string/search"
+                    android:inputType="textPersonName"
+                    tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+
+                <ImageButton
+                    android:id="@+id/searchButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:src="@android:drawable/ic_menu_search"
+                    tools:ignore="SpeakableTextPresentCheck" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutResultats"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout2"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

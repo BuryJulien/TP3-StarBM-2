@@ -11,4 +11,5 @@
     <string name="cancel">Annuler</string>
     <string name="departure">Départ</string>
     <string name="hours">Heures</string>
+    <string name="search">Recherche</string>
 </resources>

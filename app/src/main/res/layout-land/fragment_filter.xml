@@ -24,6 +24,13 @@
                 android:background="@color/white">
 
                 <LinearLayout
+                    android:id="@+id/layoutResultats"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout3"/>
+
+                <LinearLayout
                     android:id="@+id/linearLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -116,6 +123,33 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout3"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    app:layout_constraintTop_toBottomOf="@+id/butValidFilter"
+                    tools:layout_editor_absoluteX="411dp">
+
+                    <EditText
+                        android:id="@+id/searchText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:ems="10"
+                        android:hint="@string/search"
+                        android:inputType="textPersonName"
+                        tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+
+                    <ImageButton
+                        android:id="@+id/searchButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:src="@android:drawable/ic_menu_search"
+                        tools:ignore="SpeakableTextPresentCheck" />
+                </LinearLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </ScrollView>
