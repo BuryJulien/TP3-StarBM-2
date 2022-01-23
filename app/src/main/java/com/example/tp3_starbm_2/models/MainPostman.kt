@@ -1,40 +1,171 @@
 package com.example.tp3_starbm_2.models
 
-import android.annotation.SuppressLint
-import android.content.Context
-import com.example.tp3_starbm_2.MainActivity
-import com.example.tp3_starbm_2.interfaces.Observable
-import com.example.tp3_starbm_2.interfaces.Observer
+import com.example.tp3_star.dataBase.entities.BusRoutes
+import com.example.tp3_star.dataBase.entities.StopTimes
+import com.example.tp3_star.dataBase.entities.Stops
+import com.example.tp3_starbm_2.entities.Direction
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
-object MainPostman : Observable {
+object MainPostman : Observable() {
 
 
     var globalSubscribers = ArrayList<Observer>()
 
-    override fun subscribe(observer: Observer) {
+    fun subscribe(observer: Observer) {
         globalSubscribers.add(observer)
     }
 
-    override fun unsubscribe(observer: Observer) {
+    fun unsubscribe(observer: Observer) {
         globalSubscribers.remove(observer)
     }
 
-    override fun globalNotify() {
-        globalSubscribers.forEach { it.update() }
+    fun globalNotify() {
+        globalSubscribers.forEach { it.update(this, null) }
     }
 
-    // Main Activity package
-    private lateinit var mainActivity : MainActivity
 
-    fun setMainActivity(mainActivity: MainActivity) {
-        System.out.println("----------------------- MAIN SET")
-        System.out.println("is main non null : " + (mainActivity != null).toString())
-        this.mainActivity = mainActivity
+    //Trip package
+
+    private var date = SimpleDateFormat("yyyy-MM-dd").format(Date())
+    private var heure = "00:00:00"
+
+    private var route = BusRoutes(0, "NaN", "NaN","NaN","NaN")
+    private var tripDirection = Direction(0, "NaN")
+
+    private val tripSubscribers = ArrayList<Observer>()
+
+    fun tripPackageSubsrcibe(observer: Observer)
+    {
+        tripSubscribers.add(observer)
     }
 
-    fun getMainActivity() : MainActivity{
-        System.out.println("----------------------- MAIN GET")
-        System.out.println("is main non null : " + (mainActivity != null).toString())
-        return mainActivity
+    fun tripPackageUnsubscribe(observer: Observer)
+    {
+        tripSubscribers.remove(observer)
     }
+
+    private fun tripPackageNotify()
+    {
+        tripSubscribers.forEach { it.update(this, null) }
+    }
+
+    fun getDate() : String?
+    {
+        System.out.println(date)
+        return date
+    }
+
+    fun setDate(date: String)
+    {
+        System.out.println(date)
+        this.date = date
+        tripPackageNotify()
+    }
+
+    fun getHeure() : String
+    {
+        return heure
+    }
+
+    fun setHeure(heure : String)
+    {
+        this.heure = heure
+        tripPackageNotify()
+    }
+
+    fun getRoute() : BusRoutes
+    {
+        return route
+    }
+
+    fun setRoute(route: BusRoutes)
+    {
+        this.route = route
+    }
+
+    fun getDirection() : Direction
+    {
+        return tripDirection
+    }
+
+    fun setDirection(direction: Direction)
+    {
+        this.tripDirection = direction
+        tripPackageNotify()
+    }
+
+    //Stop package
+
+    private lateinit var stop: Stops
+
+    private val stopSubscribers = ArrayList<Observer>()
+
+    fun stopPackageSubsrcibe(observer: Observer)
+    {
+        stopSubscribers.add(observer)
+    }
+
+    fun stopPackageUnsubscribe(observer: Observer)
+    {
+        stopSubscribers.remove(observer)
+    }
+
+    private fun stopPackageNotify()
+    {
+        stopSubscribers.forEach { it.update(this, null) }
+    }
+
+    fun getStop() : Stops
+    {
+        return stop
+    }
+
+    fun setStop(stop : Stops)
+    {
+        this.stop = stop
+        stopPackageNotify()
+    }
+
+
+    // Stop time package
+
+    private lateinit var stopTime: StopTimes
+
+    private val stopTimeSubscribers = ArrayList<Observer>()
+
+    fun stopTimePackageSubsrcibe(observer: Observer)
+    {
+        stopTimeSubscribers.add(observer)
+    }
+
+    fun stopTimePackageUnsubscribe(observer: Observer)
+    {
+        stopTimeSubscribers.remove(observer)
+    }
+
+    private fun stopTimePackageNotify()
+    {
+        stopTimeSubscribers.forEach { it.update(this, null) }
+    }
+
+    fun getStopTime() : StopTimes
+    {
+        return stopTime
+    }
+
+    fun setStopTime(stopTime : StopTimes)
+    {
+        this.stopTime = stopTime
+        stopTimePackageNotify()
+    }
+
+
+
+
+
+
+
+
 }
