@@ -1,14 +1,9 @@
 package com.example.tp3_starbm_2.models
 
-import android.annotation.SuppressLint
-import android.content.Context
 import com.example.tp3_star.dataBase.entities.BusRoutes
 import com.example.tp3_star.dataBase.entities.Stops
-import com.example.tp3_starbm_2.MainActivity
-import com.example.tp3_starbm_2.contract.StarContract
 import com.example.tp3_starbm_2.entities.Direction
-import com.example.tp3_starbm_2.entities.Trips
-import java.time.LocalDateTime
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -32,7 +27,7 @@ object MainPostman : Observable() {
 
     //Trip package
 
-    private var date = Calendar.getInstance().time
+    private var date = SimpleDateFormat("yyyy-MM-dd").format(Date())
     private var heure = "00:00:00"
 
     private lateinit var route: BusRoutes
@@ -55,13 +50,15 @@ object MainPostman : Observable() {
         tripSubscribers.forEach { it.update(this, null) }
     }
 
-    fun getDate() : Date
+    fun getDate() : String?
     {
+        System.out.println(date)
         return date
     }
 
-    fun setDate(date: Date)
+    fun setDate(date: String)
     {
+        System.out.println(date)
         this.date = date
         tripPackageNotify()
     }

@@ -85,7 +85,7 @@ class FilterFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 textViewDate?.setText("" + dayOfMonth + " " + month + ", " + year)
                 val calendar = Calendar.getInstance()
                 calendar.set(year, month, dayOfMonth)
-                postMan
+                postMan.setDate(SimpleDateFormat("yyyy-MM-dd").format(calendar.time))
             }, year, month, day)
             dpd.show()
         }
